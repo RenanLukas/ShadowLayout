@@ -15,32 +15,40 @@ import android.graphics.Rect
 import android.graphics.RectF
 import android.graphics.Shader
 import android.graphics.drawable.Drawable
+import androidx.core.graphics.toRectF
 
 class ShadowDrawable : Drawable() {
+    var isResetDrawable: Boolean = false
+        private set
+
     private val matrix = Matrix()
     private val path = Path()
     private val paint = Paint().apply {
-        xfermode = PorterDuffXfermode(PorterDuff.Mode.SRC_IN)
+        xfermode = PorterDuffXfermode(PorterDuff.Mode.SRC_OVER)
     }
 
     private val colorsGradient by lazy { intArrayOf(Color.GRAY, Color.LTGRAY, Color.GRAY) }
     private val positionsGradient by lazy { floatArrayOf(0f, 0.5f, 1f) }
 
 
-    private val animation = ValueAnimator.ofFloat(ANIMATION_FROM, ANIMATION_TO).apply {
-        duration = DURATION
-        startDelay = DELAY
-        repeatMode = ValueAnimator.RESTART
-        repeatCount = ValueAnimator.INFINITE
-        addUpdateListener {
-            invalidateSelf()
+    private val animationListener: ValueAnimator.AnimatorUpdateListener
+            by lazy { ValueAnimator.AnimatorUpdateListener { invalidateSelf() } }
+
+    private val animation: ValueAnimator by lazy {
+        ValueAnimator.ofFloat(ANIMATION_FROM, ANIMATION_TO).apply {
+            duration = DURATION
+            startDelay = DELAY
+            repeatMode = ValueAnimator.RESTART
+            repeatCount = ValueAnimator.INFINITE
+            addUpdateListener(animationListener)
         }
     }
 
     private fun updateShader(width: Float, height: Float, factor: Float = -1F) {
         val left = width * factor
         val shader = LinearGradient(
-            left, DEFAULT_VALUE, left + width, DEFAULT_VALUE,
+            left, DEFAULT_VALUE, left + width,
+            DEFAULT_VALUE,
             colorsGradient,
             positionsGradient,
             Shader.TileMode.CLAMP
@@ -65,14 +73,25 @@ class ShadowDrawable : Drawable() {
 
 
     fun startAnimation() {
+        isResetDrawable = false
+        animation.addUpdateListener(animationListener)
         if (!animation.isStarted) {
             animation.start()
         }
     }
 
-    fun stopAnimation(){
-        animation.cancel()
-        animation.removeAllUpdateListeners()
+    fun stopAnimation() {
+        isResetDrawable = true
+        paint.reset()
+        animation.run {
+            cancel()
+            removeAllUpdateListeners()
+            invalidateSelf()
+        }
+    }
+
+    private fun draftShadowView(rectF: RectF) {
+        path.addRect(rectF, Path.Direction.CW)
     }
 
     override fun onBoundsChange(bounds: Rect?) {
@@ -80,31 +99,13 @@ class ShadowDrawable : Drawable() {
         bounds?.let {
             val width = bounds.right.toFloat()
             val height = bounds.bottom.toFloat()
-            //remove after
-            path.addRect(
-                RectF(
-                    bounds.left.toFloat(),
-                    bounds.top.toFloat(),
-                    width,
-                    height
-                ),
-                Path.Direction.CW
-            )
+            draftShadowView(bounds.toRectF())
             updateShader(width = width, height = height)
         }
     }
 
-    override fun setAlpha(alpha: Int) {
-        //To change body of created functions use File | Settings | File Templates.
-    }
-
     override fun getOpacity(): Int =
         PixelFormat.TRANSLUCENT
-
-    override fun setColorFilter(colorFilter: ColorFilter?) {
-        //To change body of created functions use File | Settings | File Templates.
-    }
-
 
     companion object {
         const val DEFAULT_VALUE = 0f
@@ -113,4 +114,8 @@ class ShadowDrawable : Drawable() {
         const val DURATION = 1000L
         const val DELAY = 300L
     }
+
+    override fun setAlpha(alpha: Int) {}
+
+    override fun setColorFilter(colorFilter: ColorFilter?) {}
 }
