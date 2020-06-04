@@ -6,16 +6,16 @@ import android.graphics.Paint
 import android.graphics.drawable.Drawable
 import android.util.AttributeSet
 import android.view.View
-import androidx.constraintlayout.widget.ConstraintLayout
+import android.widget.LinearLayout
 import androidx.core.view.children
 import br.com.shadowlayout.drawable.ShadowDrawable
 
-class ShadowConstraintLayout @JvmOverloads constructor(
+
+class ShadowFrameLayout @JvmOverloads constructor(
     context: Context,
     attrs: AttributeSet,
     defStyleAttr: Int = 0
-) : ConstraintLayout(context, attrs, defStyleAttr) {
-
+) : LinearLayout(context, attrs, defStyleAttr) {
     private val shadowDrawable = ShadowDrawable()
     private val paint = Paint()
 

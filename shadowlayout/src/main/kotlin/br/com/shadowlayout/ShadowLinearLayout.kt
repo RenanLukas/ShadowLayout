@@ -6,16 +6,16 @@ import android.graphics.Paint
 import android.graphics.drawable.Drawable
 import android.util.AttributeSet
 import android.view.View
-import androidx.constraintlayout.widget.ConstraintLayout
+import android.widget.LinearLayout
 import androidx.core.view.children
 import br.com.shadowlayout.drawable.ShadowDrawable
 
-class ShadowConstraintLayout @JvmOverloads constructor(
+
+class ShadowLinearLayout @JvmOverloads constructor(
     context: Context,
     attrs: AttributeSet,
     defStyleAttr: Int = 0
-) : ConstraintLayout(context, attrs, defStyleAttr) {
-
+) : LinearLayout(context, attrs, defStyleAttr) {
     private val shadowDrawable = ShadowDrawable()
     private val paint = Paint()
 
@@ -35,12 +35,18 @@ class ShadowConstraintLayout @JvmOverloads constructor(
         super.dispatchDraw(canvas)
         // call block() here if you want to draw over children
         if (shadowDrawable.isResetDrawable) return
+        shadowDrawable.withParent = this.measuredWidth
         children.forEach { view ->
             canvas?.let {
                 shadowDrawable.setBounds(view.left, view.top, view.right, view.bottom)
                 shadowDrawable.draw(it)
             }
         }
+    }
+
+    override fun onDetachedFromWindow() {
+        super.onDetachedFromWindow()
+        stopShadow()
     }
 
     fun stopShadow(actionStop: (() -> Unit)? = null) {

@@ -16,8 +16,10 @@ import android.graphics.RectF
 import android.graphics.Shader
 import android.graphics.drawable.Drawable
 import androidx.core.graphics.toRectF
+import kotlin.math.min
 
 class ShadowDrawable : Drawable() {
+    var withParent: Int = 0
     var isResetDrawable: Boolean = false
         private set
 
@@ -44,11 +46,10 @@ class ShadowDrawable : Drawable() {
         }
     }
 
-    private fun updateShader(width: Float, height: Float, factor: Float = -1F) {
-        val left = width * factor
+    private fun updateShader(width: Float, height: Float) {
         val shader = LinearGradient(
-            left, DEFAULT_VALUE, left + width,
-            DEFAULT_VALUE,
+            min(300F, width).unaryMinus(),
+            DEFAULT_VALUE, DEFAULT_VALUE, DEFAULT_VALUE,
             colorsGradient,
             positionsGradient,
             Shader.TileMode.CLAMP
@@ -64,10 +65,8 @@ class ShadowDrawable : Drawable() {
 
     private fun settingsMatrix() {
         val valueAnimator = animation.animatedFraction
-        val width = bounds.right.toFloat()
-
         matrix.reset()
-        matrix.postTranslate((width * 2) * valueAnimator, DEFAULT_VALUE)
+        matrix.postTranslate((withParent * 2) * valueAnimator, DEFAULT_VALUE)
         paint.shader.setLocalMatrix(matrix)
     }
 
@@ -108,11 +107,11 @@ class ShadowDrawable : Drawable() {
         PixelFormat.TRANSLUCENT
 
     companion object {
+        const val DURATION = 1500L
+        const val DELAY = 500L
         const val DEFAULT_VALUE = 0f
         const val ANIMATION_FROM = DEFAULT_VALUE
-        const val ANIMATION_TO = 1f
-        const val DURATION = 1000L
-        const val DELAY = 300L
+        const val ANIMATION_TO = (DURATION + DELAY).toFloat()
     }
 
     override fun setAlpha(alpha: Int) {}
