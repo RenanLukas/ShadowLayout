@@ -5,7 +5,7 @@
     android:layout_margin="10dp"
     android:orientation="vertical">
 
-    <br.com.shadowlayout.ShadowConstraintLayout
+    <br.com.shadowlayout.ShadowLinearLayout
         android:id="@+id/shadow"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -17,6 +17,7 @@
             android:layout_margin="10dp">
 
             <ImageView
+                android:id="@+id/img"
                 android:layout_width="70dp"
                 android:layout_height="70dp"
                 android:src="@mipmap/ic_launcher" />
@@ -24,32 +25,21 @@
         </androidx.appcompat.widget.LinearLayoutCompat>
 
         <TextView
-            android:id="@+id/hello"
+            android:id="@+id/txt1"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_margin="10dp"
             android:text="Hello World!" />
 
         <TextView
+            android:id="@+id/txt2"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_margin="10dp"
             android:text="Hello WorldHello WorldHello World!" />
 
         <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_margin="10dp"
-            android:text="Hello World!" />
-
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_margin="10dp"
-            android:text="Hello WorldHello WorldHello World!" />
-
-        <TextView
+            android:id="@+id/txt3"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_margin="10dp"
@@ -57,17 +47,26 @@
 
 
         <TextView
+            android:id="@+id/txt4"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_margin="10dp"
             android:text="Hello WorldHello WorldHello World!" />
 
-    </br.com.shadowlayout.ShadowConstraintLayout>
+        <TextView
+            android:id="@+id/txt5"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="10dp"
+            android:text="Hello World!" />
+
+    </br.com.shadowlayout.ShadowLinearLayout>
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="horizontal">
+        android:orientation="horizontal"
+        android:visibility="visible">
 
         <Button
             android:id="@+id/btnStart"
@@ -81,6 +80,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_weight="0.5"
+            android:visibility="gone"
             android:text="Stop" />
 
     </LinearLayout>
