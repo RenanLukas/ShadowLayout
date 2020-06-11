@@ -37,10 +37,10 @@ class ShadowLinearLayout @JvmOverloads constructor(
         if (shadowDrawable.isResetDrawable) return
         shadowDrawable.withParent = this.measuredWidth
         children.forEach { view ->
-            canvas?.let {
-                shadowDrawable.setBounds(view.left, view.top, view.right, view.bottom)
-                shadowDrawable.draw(it)
-            }
+            shadowDrawable.setBounds(view.left, view.top, view.right, view.bottom)
+        }
+        canvas?.let {
+            shadowDrawable.draw(canvas)
         }
     }
 

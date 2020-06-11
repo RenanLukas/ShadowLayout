@@ -81,7 +81,7 @@ class ShadowDrawable : Drawable() {
 
     fun stopAnimation() {
         isResetDrawable = true
-        paint.reset()
+        path.reset()
         animation.run {
             cancel()
             removeAllUpdateListeners()
@@ -90,7 +90,13 @@ class ShadowDrawable : Drawable() {
     }
 
     private fun draftShadowView(rectF: RectF) {
-        path.addRect(rectF, Path.Direction.CW)
+        path.addRoundRect(
+            rectF,
+            floatArrayOf(
+                10f, 10f, 10f, 10f,
+                10f, 10f, 10f, 10f
+            ), Path.Direction.CW
+        )
     }
 
     override fun onBoundsChange(bounds: Rect?) {
