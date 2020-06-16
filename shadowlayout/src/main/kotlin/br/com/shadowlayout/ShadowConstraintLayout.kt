@@ -8,7 +8,7 @@ import android.util.AttributeSet
 import android.view.View
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.view.children
-import br.com.shadowlayout.drawable.ShadowDrawable
+import br.com.shadowlayout.drawable.ShadowLinearDrawable
 
 class ShadowConstraintLayout @JvmOverloads constructor(
     context: Context,
@@ -16,7 +16,7 @@ class ShadowConstraintLayout @JvmOverloads constructor(
     defStyleAttr: Int = 0
 ) : ConstraintLayout(context, attrs, defStyleAttr) {
 
-    private val shadowDrawable = ShadowDrawable()
+    private val shadowDrawable = ShadowLinearDrawable()
     private val paint = Paint()
 
     override fun onAttachedToWindow() {
@@ -34,7 +34,7 @@ class ShadowConstraintLayout @JvmOverloads constructor(
         // call block() here if you want to draw behind children
         super.dispatchDraw(canvas)
         // call block() here if you want to draw over children
-        if (shadowDrawable.isResetDrawable) return
+        if (shadowDrawable.isRunning()) return
         children.forEach { view ->
             canvas?.let {
                 shadowDrawable.setBounds(view.left, view.top, view.right, view.bottom)

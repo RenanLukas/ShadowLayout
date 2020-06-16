@@ -18,10 +18,8 @@ import android.graphics.drawable.Drawable
 import androidx.core.graphics.toRectF
 import kotlin.math.min
 
-class ShadowDrawable : Drawable() {
-    var withParent: Int = 0
-    var isResetDrawable: Boolean = false
-        private set
+class ShadowLinearDrawable : Drawable() {
+    var parentWidth: Int = 0
 
     private val matrix = Matrix()
     private val path = Path()
@@ -39,14 +37,14 @@ class ShadowDrawable : Drawable() {
     private val animation: ValueAnimator by lazy {
         ValueAnimator.ofFloat(ANIMATION_FROM, ANIMATION_TO).apply {
             duration = DURATION
-            startDelay = DELAY
             repeatMode = ValueAnimator.RESTART
             repeatCount = ValueAnimator.INFINITE
             addUpdateListener(animationListener)
         }
     }
 
-    private fun updateShader(width: Float, height: Float) {
+    private fun updateShader(width: Float) {
+        if (paint.shader != null) return
         val shader = LinearGradient(
             min(300F, width).unaryMinus(),
             DEFAULT_VALUE, DEFAULT_VALUE, DEFAULT_VALUE,
@@ -58,21 +56,20 @@ class ShadowDrawable : Drawable() {
     }
 
     override fun draw(canvas: Canvas) {
+        if (!animation.isRunning) return
         settingsMatrix()
         canvas.drawPath(path, paint)
-        startAnimation()
     }
 
     private fun settingsMatrix() {
         val valueAnimator = animation.animatedFraction
         matrix.reset()
-        matrix.postTranslate((withParent * 2) * valueAnimator, DEFAULT_VALUE)
+        matrix.postTranslate((parentWidth * 2) * valueAnimator, DEFAULT_VALUE)
         paint.shader.setLocalMatrix(matrix)
     }
 
 
     fun startAnimation() {
-        isResetDrawable = false
         animation.addUpdateListener(animationListener)
         if (!animation.isStarted) {
             animation.start()
@@ -80,7 +77,6 @@ class ShadowDrawable : Drawable() {
     }
 
     fun stopAnimation() {
-        isResetDrawable = true
         path.reset()
         animation.run {
             cancel()
@@ -90,6 +86,7 @@ class ShadowDrawable : Drawable() {
     }
 
     private fun draftShadowView(rectF: RectF) {
+        if (animation.isRunning) return
         path.addRoundRect(
             rectF,
             floatArrayOf(
@@ -103,9 +100,8 @@ class ShadowDrawable : Drawable() {
         super.onBoundsChange(bounds)
         bounds?.let {
             val width = bounds.right.toFloat()
-            val height = bounds.bottom.toFloat()
             draftShadowView(bounds.toRectF())
-            updateShader(width = width, height = height)
+            updateShader(width = width)
         }
     }
 
@@ -114,11 +110,12 @@ class ShadowDrawable : Drawable() {
 
     companion object {
         const val DURATION = 1500L
-        const val DELAY = 500L
         const val DEFAULT_VALUE = 0f
         const val ANIMATION_FROM = DEFAULT_VALUE
-        const val ANIMATION_TO = (DURATION + DELAY).toFloat()
+        const val ANIMATION_TO = (DURATION + 500L).toFloat()
     }
+
+    fun isRunning() = animation.isRunning
 
     override fun setAlpha(alpha: Int) {}
 

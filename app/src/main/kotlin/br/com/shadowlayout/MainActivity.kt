@@ -15,15 +15,15 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-        simulateRequestBehavior()
+//        simulateRequestBehavior()
 
         btnStart.setOnClickListener {
             simulateRequestBehavior()
         }
-//
-//        btnStop.setOnClickListener {
-//            shadow.stopShadow()
-//        }
+
+        btnStop.setOnClickListener {
+            shadow.stopShadow()
+        }
     }
 
     @SuppressLint("SetTextI18n")
