@@ -8,6 +8,14 @@ function check_changelog() {
   fi
 }
 
+function check_current_tag() {
+  local tag=$(git describe --abbrev=0 --tags)
+  if grep -w ${tag} CHANGELOG.md; then
+     echo "The tag:${tag}  is present in changelog file"
+     exit 1
+  fi
+}
+
 
 function get_changelog() {
   local currentTag previousTag prevChangelogContents
@@ -27,6 +35,7 @@ function get_changelog() {
 
 function main() {
   check_changelog
+  check_current_tag
   get_changelog
 }
 
