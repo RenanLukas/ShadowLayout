@@ -19,7 +19,7 @@ function get_changelog() {
     echo "## $currentTag";
     echo "";
 #    echo $(git shortlog --no-merges | grep -v "Upgrade to";)
-    git log --pretty="%ad %h - %s %n" --decorate --color --date=format:'%Y/%m/%d'
+    git log --pretty="%ad %h - %s %n" --decorate --color --date=format:'%Y/%m/%d' ${currentTag}...${previousTag}
     echo "";
   } > CHANGELOG.md
   echo "$prevChangelogContents" >> CHANGELOG.md
