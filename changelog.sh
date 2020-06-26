@@ -12,7 +12,7 @@ function check_changelog() {
 function get_changelog() {
   local currentTag previousTag prevChangelogContents
   currentTag=$(git describe --abbrev=0 --tags)
-  previousTag=$(git describe --abbrev=0)
+  previousTag=$(git describe --abbrev=0 ${currentTag}^)
   prevChangelogContents=$(cat ./CHANGELOG.md)
 
   {
