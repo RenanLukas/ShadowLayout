@@ -16,27 +16,42 @@ function check_current_tag() {
   fi
 }
 
+function get_tag_new() {
+    local contentNew
+    currentTag=$(git describe --abbrev=0 --tags)
+    previousTag=$(git describe --abbrev=0 ${currentTag}^)
+
+    contentNew=$(cat << EOM
+### Added
+   * $(git log --pretty="[%ad] %h - %s %n" --grep="Added:" --decorate --color --date=format:'%Y/%m/%d' ${currentTag}...${previousTag})
+EOM
+)
+
+}
 
 function get_changelog() {
-  local currentTag previousTag prevChangelogContents
+  local currentTag previousTag prevChangelogContents content
   currentTag=$(git describe --abbrev=0 --tags)
   previousTag=$(git describe --abbrev=0 ${currentTag}^)
   prevChangelogContents=$(cat ./CHANGELOG.md)
 
-  {
-    echo "## $currentTag";
-    echo "";
-#    echo $(git shortlog --no-merges | grep -v "Upgrade to";)
-    git log --pretty="%ad %h - %s %n" --decorate --color --date=format:'%Y/%m/%d' ${currentTag}...${previousTag}
-    echo "";
-  } > CHANGELOG.md
-  echo "$prevChangelogContents" >> CHANGELOG.md
+content=$(cat << EOM
+# Changelog
+
+## ${currentTag} - $(date +'[%d/%m/%Y]')
+
+$(git log --pretty="[%ad] %h - %s %n" --decorate --color --date=format:'%Y/%m/%d' ${currentTag}...${previousTag})
+EOM
+)
+    echo "$content" > CHANGELOG.md
+    echo "$prevChangelogContents" | sed -e 's/\# Changelog//g' >> CHANGELOG.md
 }
 
 function main() {
   check_changelog
   check_current_tag
   get_changelog
+#  $(git log --pretty="[%ad] %h - %s %n" --decorate --color --date=format:'%Y/%m/%d' ${currentTag}...${previousTag})
 }
 
 main
