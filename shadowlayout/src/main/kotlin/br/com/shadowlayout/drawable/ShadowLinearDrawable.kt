@@ -20,9 +20,9 @@ import kotlin.math.min
 
 class ShadowLinearDrawable : Drawable() {
     var parentWidth: Int = 0
-
     private val matrix = Matrix()
     private val path = Path()
+    private var cachePath: Pair<Boolean, Path> = Pair(first = false, second = path)
     private val paint = Paint().apply {
         xfermode = PorterDuffXfermode(PorterDuff.Mode.SRC_OVER)
     }
@@ -56,9 +56,10 @@ class ShadowLinearDrawable : Drawable() {
     }
 
     override fun draw(canvas: Canvas) {
-        if (!animation.isRunning) return
+        if (!isRunning()) return
+        cachePath = cachePath.copy(first = true, second = path)
         settingsMatrix()
-        canvas.drawPath(path, paint)
+        canvas.drawPath(cachePath.second, paint)
     }
 
     private fun settingsMatrix() {
@@ -77,16 +78,15 @@ class ShadowLinearDrawable : Drawable() {
     }
 
     fun stopAnimation() {
-        path.reset()
+        cachePath = cachePath.copy(first = false, second = path.apply { reset() })
         animation.run {
             cancel()
             removeAllUpdateListeners()
-            invalidateSelf()
         }
     }
 
     private fun draftShadowView(rectF: RectF) {
-        if (animation.isRunning) return
+        if (cachePath.first) return
         path.addRoundRect(
             rectF,
             floatArrayOf(
